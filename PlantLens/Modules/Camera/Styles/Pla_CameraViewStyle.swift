@@ -10,24 +10,25 @@ import SwiftUICore
 
 struct Pla_CameraViewStyle {
     // MARK: - 文本
-    static let tipEnsurePlant = CameraStrings.tipEnsurePlant
-    static let buttonImproveAccuracy = CameraStrings.improveAccuracy
-    static let buttonRecognize = CameraStrings.buttonRecognize
-    static let button360Recognize = CameraStrings.button360Recognize
+    let tipEnsurePlant = CameraStrings.tipEnsurePlant
+    let buttonImproveAccuracy = CameraStrings.improveAccuracy
+    let buttonRecognize = CameraStrings.buttonRecognize
+    let button360Recognize = CameraStrings.button360Recognize
 
     // MARK: - 图标
-    static let iconClose = Image(systemName: "xmark")
-    static let iconFlashOn = Image(systemName: "bolt.fill")
-    static let iconFlashOff = Image(systemName: "bolt.slash.fill")
-    static let iconFlipCamera = Image(systemName: "arrow.triangle.2.circlepath.camera")
-    static let iconHelp = Image(systemName: "questionmark.circle")
+    let iconClose = Image(systemName: "xmark")
+    let iconFlashOn = Image(systemName: "bolt.fill")
+    let iconFlashOff = Image(systemName: "bolt.slash.fill")
+    let iconFlipCamera = Image(systemName: "arrow.triangle.2.circlepath.camera")
+    let iconHelp = Image(systemName: "questionmark.circle")
+    let iconPhoto = Image(systemName: "photo")
 
     // MARK: - 颜色
-    static let backgroundColor = Color.black.opacity(0.8)
-    static let buttonColor = Color.white
-    static let accentColor = Color.green
+    let backgroundColor = Color.black.opacity(0.8)
+    let buttonColor = Color.white
+    let accentColor = Color.green
 
     // MARK: - 尺寸
-    static let cornerRadius: CGFloat = 12.0
-    static let buttonSize: CGFloat = 60.0
+    let cornerRadius: CGFloat = 12.0
+    let buttonSize: CGFloat = 60.0
 }

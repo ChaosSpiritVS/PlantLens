@@ -1,5 +1,5 @@
 //
-//  Xyn_NotificationDelegate.swift
+//  Pla_NotificationDelegate.swift
 //  Xync
 //
 //  Created by 李杰 on 2025/3/17.
@@ -7,8 +7,8 @@
 
 import UserNotifications
 
-class Xyn_NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
-    static let shared = Xyn_NotificationDelegate()
+class Pla_NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
+    static let shared = Pla_NotificationDelegate()
     
     // App 运行时收到通知时调用（前台展示）
     func userNotificationCenter(_ center: UNUserNotificationCenter,

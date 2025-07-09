@@ -6,4 +6,7 @@
   
 */
 
-"camera_tip_ensure_plant" = "确保植物在镜头中清晰可见";
+"tip_ensure_plant" = "Make sure the plant is clear";
+"improve_accuracy" = "Improve accuracy";
+"button_recognize" = "Identify";
+"button_360_recognize" = "360° Identify";

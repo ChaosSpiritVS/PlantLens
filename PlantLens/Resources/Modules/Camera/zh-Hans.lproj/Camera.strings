@@ -1,0 +1,12 @@
+/* 
+  Camera.strings
+  PlantLens
+
+  Created by 李杰 on 2025/7/4.
+  
+*/
+
+"tip_ensure_plant" = "确保植物在镜头中清晰可见";
+"improve_accuracy" = "提高准确性";
+"button_recognize" = "识别";
+"button_360_recognize" = "360°识别";

@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct Pla_MianTabViewModel: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+class Pla_MianTabViewModel: ObservableObject {
+    @Published var style = Pla_MainTabViewStyle()
+    
+    // 模态相机界面
+    func presentCameraView() {
+        Pla_AppCoordinator.shared.present(.camera)
     }
-}
-
-#Preview {
-    Pla_MianTabViewModel()
+    
 }

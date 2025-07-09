@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum AppTheme {
+enum Pla_AppTheme {
     
     // MARK: - Colors
     struct Colors {

@@ -1,5 +1,5 @@
 //
-//  Pla_LoginView.swift
+//  Pla_PlantsView.swift
 //  PlantLens
 //
 //  Created by 李杰 on 2025/7/3.
@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct Pla_LoginView: View {
+struct Pla_PlantsView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("我的植物")
     }
 }
 
 #Preview {
-    Pla_LoginView()
+    Pla_PlantsView()
 }

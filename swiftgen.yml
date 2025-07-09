@@ -1,27 +1,47 @@
-#
-//  swiftgen.yml
-//  PlantLens
-//
-//  Created by 李杰 on 2025/7/4.
-//
 
+# Camera 模块
 strings:
-  inputs:
-    - PlantLens/Resources/Strings
-  outputs:
-    templateName: structured-swift5
-    output: PlantLens/Generated/L10n+Strings.swift
+  - inputs:
+      - PlantLens/Resources/Modules/Camera/zh-Hans.lproj/Camera.strings
+    outputs:
+      - templateName: structured-swift5
+        output: PlantLens/Generated/Camera+Strings.swift
+        params:
+          enumName: CameraStrings
 
-#assets:
+xcassets:
+  - inputs:
+      - PlantLens/Resources/Modules/Camera/Assets.xcassets
+    outputs:
+      - templateName: swift5
+        output: PlantLens/Generated/Camera+Assets.swift
+        params:
+          enumName: CameraAssets
+
+#fonts:
 #  inputs:
-#    - PlantLens/Resources/Assets.xcassets
+#      - PlantLens/Resources/Modules/Camera/Fonts
 #  outputs:
-#    templateName: swift5
-#    output: PlantLens/Generated/Assets+Images.swift
-#
-#colors:
-#  inputs:
-#    - PlantLens/Resources/Colors.xcassets
-#  outputs:
-#    templateName: swift5
-#    output: PlantLens/Generated/Assets+Colors.swift
+#    - templateName: swift5
+#      output: PlantLens/Generated/Camera+Fonts.swift
+#      params:
+#      enumName: CameraFonts
+
+# Common 模块
+strings:
+  - inputs:
+      - PlantLens/Resources/Modules/Common/zh-Hans.lproj/Common.strings
+    outputs:
+      - templateName: structured-swift5
+        output: PlantLens/Generated/Common+Strings.swift
+        params:
+          enumName: CommonStrings
+          
+xcassets:
+  - inputs:
+      - PlantLens/Resources/Modules/Common/Assets.xcassets
+    outputs:
+      - templateName: swift5
+        output: PlantLens/Generated/Common+Assets.swift
+        params:
+          enumName: CommonAssets
