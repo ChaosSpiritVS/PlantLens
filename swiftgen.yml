@@ -1,0 +1,27 @@
+#
+//  swiftgen.yml
+//  PlantLens
+//
+//  Created by 李杰 on 2025/7/4.
+//
+
+strings:
+  inputs:
+    - PlantLens/Resources/Strings
+  outputs:
+    templateName: structured-swift5
+    output: PlantLens/Generated/L10n+Strings.swift
+
+#assets:
+#  inputs:
+#    - PlantLens/Resources/Assets.xcassets
+#  outputs:
+#    templateName: swift5
+#    output: PlantLens/Generated/Assets+Images.swift
+#
+#colors:
+#  inputs:
+#    - PlantLens/Resources/Colors.xcassets
+#  outputs:
+#    templateName: swift5
+#    output: PlantLens/Generated/Assets+Colors.swift
