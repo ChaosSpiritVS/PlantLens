@@ -2,3 +2,4 @@
 Configs/
 *.xcconfig
 PlantLens/Configs/*.xcconfig
+PlantLens/Info.plist
