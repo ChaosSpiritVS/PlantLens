@@ -12,16 +12,16 @@ import UIKit
 class Pla_PlantRecognitionService {
     static let shared = Pla_PlantRecognitionService()
 
-    private let openAIAPIKey = Bundle.main.infoDictionary?["ZENAI_APP_KEY_OPENAI"] as? String ?? ""
+    private let openAIAPIKey = Pla_Secrets.zenAI_OpenAIKey
     private let endpoint = "https://zen-ai.top/v1/chat/completions"
     //"https://api.openai.com/v1/chat/completions"
     
-    private let geminiAPIKey = Bundle.main.infoDictionary?["ZENAI_APP_KEY_GEMINI"] as? String ?? ""
+    private let geminiAPIKey = Pla_Secrets.zenAI_GeminiKey
     private let geminiEndpoint = "https://zen-ai.top/v1/models/gemini-2.5-flash:generateContent?key="
     //"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key="
 
-    private let baiduAPIKey = Bundle.main.infoDictionary?["BAIDU_API_KEY"] as? String ?? ""
-    private let baiduSecretKey = Bundle.main.infoDictionary?["BAIDU_SECRET_KEY"] as? String ?? ""
+    private let baiduAPIKey = Pla_Secrets.baiduAPIKey
+    private let baiduSecretKey = Pla_Secrets.baiduSecretKey
     private var baiduAccessToken: String?
 
     private init() {}
