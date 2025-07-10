@@ -8,12 +8,17 @@
 import Foundation
 import UIKit
 
-/// 🌱 植物识别服务（GPT-4o + 百度实现）
+/// 🌱 植物识别服务（GPT-4o + Gemini 2.5 + 百度实现）
 class Pla_PlantRecognitionService {
     static let shared = Pla_PlantRecognitionService()
 
-    private let openAIAPIKey = Bundle.main.infoDictionary?["OPENAI_API_KEY"] as? String ?? ""
-    private let endpoint = "https://api.openai.com/v1/chat/completions"
+    private let openAIAPIKey = Bundle.main.infoDictionary?["ZENAI_APP_KEY_OPENAI"] as? String ?? ""
+    private let endpoint = "https://zen-ai.top/v1/chat/completions"
+    //"https://api.openai.com/v1/chat/completions"
+    
+    private let geminiAPIKey = Bundle.main.infoDictionary?["ZENAI_APP_KEY_GEMINI"] as? String ?? ""
+    private let geminiEndpoint = "https://zen-ai.top/v1/models/gemini-2.5-flash:generateContent?key="
+    //"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key="
 
     private let baiduAPIKey = Bundle.main.infoDictionary?["BAIDU_API_KEY"] as? String ?? ""
     private let baiduSecretKey = Bundle.main.infoDictionary?["BAIDU_SECRET_KEY"] as? String ?? ""
@@ -21,33 +26,70 @@ class Pla_PlantRecognitionService {
 
     private init() {}
 
-    /// 🔍 主入口：优先 GPT-4o，失败时自动降级百度
+    /// 🔍 主入口：GPT-4o → Gemini 2.5 → 百度
     func identifyPlant(image: UIImage, completion: @escaping (Result<Pla_RecognitionResult, Error>) -> Void) {
         identifyWithGPT4o(image: image) { result in
             switch result {
             case .success(let res):
                 completion(.success(res))
-            case .failure:
-                print("⚠️ GPT-4o 识别失败，尝试使用百度API")
-                self.identifyWithBaidu(image: image, completion: completion)
+            case .failure(let err):
+                completion(.failure(err))
             }
         }
+        
+//        identifyWithGemini(image: image) { result in
+//            switch result {
+//            case .success(let res):
+//                completion(.success(res))
+//            case .failure(let err):
+//                completion(.failure(err))
+//            }
+//        }
+        
+//        identifyWithBaidu(image: image) { result in
+//            switch result {
+//            case .success(let res):
+//                completion(.success(res))
+//            case .failure(let err):
+//                completion(.failure(err))
+//            }
+//        }
+        
     }
 
     /// 🌿 使用 GPT-4o 识别植物
     private func identifyWithGPT4o(image: UIImage, completion: @escaping (Result<Pla_RecognitionResult, Error>) -> Void) {
-        guard let imageData = image.jpegData(compressionQuality: 0.7) else {
+        // ≤1MB，最长边2048
+        guard let imageData = resizeImageForModel(
+            image,
+            maxBase64SizeKB: 1024, // 1MB
+            maxLength: 2048,
+            startCompression: 0.8
+        ) else {
             completion(.failure(NSError(domain: "ImageConversionError", code: -1)))
             return
         }
 
         let base64Image = imageData.base64EncodedString()
 
-        let messages: [[String: String]] = [
-            ["role": "system", "content": "你是一个植物识别专家，请根据用户上传的植物图片，返回植物的中文名、拉丁名、置信度（0-1）、简短描述和示意图片URL（如果有）。结果格式为JSON：{\"name\":\"\",\"latinName\":\"\",\"confidence\":0.9,\"description\":\"\",\"imageUrl\":\"\"}"],
-            ["role": "user", "content": "图片数据：data:image/jpeg;base64,\(base64Image)"]
+        let messages: [[String: Any]] = [
+            [
+                "role": "system",
+                "content": "你是一个植物识别专家，请根据用户上传的植物图片，返回植物的中文名、拉丁名、置信度（0-1）、简短描述和示意图片URL（如果有）。结果格式为JSON：{\"name\":\"\",\"latinName\":\"\",\"confidence\":0.9,\"description\":\"\",\"imageUrl\":\"\"}"
+            ],
+            [
+                "role": "user",
+                "content": [
+                    [
+                        "type": "image_url",
+                        "image_url": [
+                            "url": "data:image/jpeg;base64,\(base64Image)"
+                        ]
+                    ]
+                ]
+            ]
         ]
-
+        
         let payload: [String: Any] = [
             "model": "gpt-4o",
             "messages": messages,
@@ -63,33 +105,158 @@ class Pla_PlantRecognitionService {
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
         } catch {
+            print("❌ JSON序列化错误：\(error)")
             completion(.failure(error))
             return
         }
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
+                print("❌ GPT-4o 请求错误：\(error.localizedDescription)")
                 completion(.failure(error))
                 return
             }
 
             guard let data = data else {
+                print("❌ GPT-4o 返回数据为空")
                 completion(.failure(NSError(domain: "NoDataError", code: -1)))
                 return
+            }
+
+            // 📝 打印返回的完整 JSON
+            if let rawJson = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: rawJson, options: [.prettyPrinted, .withoutEscapingSlashes]),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                print("🟢 GPT-4o 返回的完整 JSON：\n\(prettyString)")
+            } else {
+                print("⚠️ 无法格式化 GPT-4o 返回的数据")
             }
 
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let choices = json["choices"] as? [[String: Any]],
                    let content = choices.first?["message"] as? [String: Any],
-                   let resultText = content["content"] as? String,
-                   let resultData = resultText.data(using: .utf8) {
-                    let result = try JSONDecoder().decode(Pla_RecognitionResult.self, from: resultData)
-                    completion(.success(result))
+                   let resultText = content["content"] as? String {
+                    
+                    guard let cleanedJSON = self.extractJSON(from: resultText) else {
+                        print("❌ 无法从文本中提取有效 JSON")
+                        completion(.failure(NSError(domain: "JSONExtractError", code: -11)))
+                        return
+                    }
+                    
+                    if let resultData = cleanedJSON.data(using: .utf8) {
+                        let result = try JSONDecoder().decode(Pla_RecognitionResult.self, from: resultData)
+                        completion(.success(result))
+                    } else {
+                        print("❌ 无法将提取后的字符串转为 Data")
+                        completion(.failure(NSError(domain: "DataConversionError", code: -10)))
+                    }
+                    
                 } else {
+                    print("❌ GPT-4o JSON解析失败，缺少关键字段")
                     completion(.failure(NSError(domain: "ParseError", code: -1)))
                 }
             } catch {
+                print("❌ GPT-4o JSON反序列化错误：\(error)")
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
+    // 🌿 使用 Gemini 2.5 识别植物
+    private func identifyWithGemini(image: UIImage, completion: @escaping (Result<Pla_RecognitionResult, Error>) -> Void) {
+        // ≤2MB，最长边2048
+        guard let imageData = resizeImageForModel(
+            image,
+            maxBase64SizeKB: 2048, // 2MB
+            maxLength: 2048,
+            startCompression: 0.8
+        ) else {
+            completion(.failure(NSError(domain: "ImageConversionError", code: -1)))
+            return
+        }
+        
+        let base64Image = imageData.base64EncodedString()
+
+        let payload: [String: Any] = [
+            "contents": [
+                [
+                    "parts": [
+                        ["text": """
+                            你是一个植物识别专家，请根据用户上传的植物图片，返回植物的中文名、拉丁名、置信度（0-1）、简短描述和示意图片URL（如果有）。
+                            结果格式为JSON：{"name":"","latinName":"","confidence":0.9,"description":"","imageUrl":""}
+                        """],
+                        ["inline_data": [
+                            "mime_type": "image/jpeg",
+                            "data": base64Image
+                        ]]
+                    ]
+                ]
+            ]
+        ]
+
+        guard let url = URL(string: geminiEndpoint + geminiAPIKey) else {
+            completion(.failure(NSError(domain: "InvalidURL", code: -2)))
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
+        } catch {
+            print("❌ Gemini JSON序列化错误：\(error)")
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            if let error = error {
+                print("❌ Gemini 请求错误：\(error.localizedDescription)")
+                completion(.failure(error))
+                return
+            }
+            guard let data = data else {
+                print("❌ Gemini 返回数据为空")
+                completion(.failure(NSError(domain: "NoDataError", code: -1)))
+                return
+            }
+
+            // 📝 打印返回的完整 JSON
+            if let rawJson = try? JSONSerialization.jsonObject(with: data, options: []),
+               let prettyData = try? JSONSerialization.data(withJSONObject: rawJson, options: [.prettyPrinted, .withoutEscapingSlashes]),
+               let prettyString = String(data: prettyData, encoding: .utf8) {
+                print("🟢 Gemini 2.5 返回的完整 JSON：\n\(prettyString)")
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let candidates = json["candidates"] as? [[String: Any]],
+                   let content = candidates.first?["content"] as? [String: Any],
+                   let parts = content["parts"] as? [[String: Any]],
+                   let rawText = parts.first?["text"] as? String {
+                    
+                    guard let cleanedJSON = self.extractJSON(from: rawText) else {
+                        print("❌ 无法从文本中提取有效 JSON")
+                        completion(.failure(NSError(domain: "JSONExtractError", code: -11)))
+                        return
+                    }
+
+                    if let resultData = cleanedJSON.data(using: .utf8) {
+                        let result = try JSONDecoder().decode(Pla_RecognitionResult.self, from: resultData)
+                        completion(.success(result))
+                    } else {
+                        print("❌ 无法将提取后的字符串转为 Data")
+                        completion(.failure(NSError(domain: "DataConversionError", code: -10)))
+                    }
+
+                } else {
+                    print("❌ Gemini JSON解析失败，缺少关键字段")
+                    completion(.failure(NSError(domain: "ParseError", code: -1)))
+                }
+            } catch {
+                print("❌ Gemini JSON反序列化错误：\(error)")
                 completion(.failure(error))
             }
         }.resume()
@@ -136,8 +303,13 @@ class Pla_PlantRecognitionService {
 
     /// 🌿 调用百度植物识别API
     private func callBaiduPlantAPI(image: UIImage, token: String, completion: @escaping (Result<Pla_RecognitionResult, Error>) -> Void) {
-        // 1️⃣ 压缩并调整尺寸
-        guard let finalImageData = resizeImageToFitBaidu(image) else {
+        // ≤4MB，最长边4096
+        guard let finalImageData = resizeImageForModel(
+            image,
+            maxBase64SizeKB: 4096, // 4MB
+            maxLength: 4096,
+            startCompression: 0.7
+        ) else {
             completion(.failure(NSError(domain: "ImageTooLargeError", code: -7)))
             return
         }
@@ -180,7 +352,12 @@ class Pla_PlantRecognitionService {
 
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                    print("🟢 返回的完整 JSON：\(json)")
+                    let prettyData = try JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted, .withoutEscapingSlashes])
+                    if let prettyString = String(data: prettyData, encoding: .utf8) {
+                        print("🟢 百度API 返回的完整 JSON：\n\(prettyString)")
+                    } else {
+                        print("🟢 百度API 返回的完整 JSON（编码失败）")
+                    }
 
                     guard let results = json["result"] as? [[String: Any]],
                           let first = results.first,
@@ -216,42 +393,72 @@ class Pla_PlantRecognitionService {
         }.resume()
     }
     
-    private func resizeImageToFitBaidu(_ image: UIImage) -> Data? {
-        var targetImage = image
-        var compression: CGFloat = 0.7
+    /// 🛡️ 从文本中提取有效 JSON
+    private func extractJSON(from text: String) -> String? {
+        var cleaned = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // 循环调整：先缩放尺寸，再降压缩质量
-        for _ in 0..<5 {
+        // 1️⃣ 去掉 ```json 或 ```
+        if cleaned.hasPrefix("```json") {
+            cleaned = String(cleaned.dropFirst(6))
+        }
+        if cleaned.hasPrefix("```") {
+            cleaned = String(cleaned.dropFirst(3))
+        }
+        if cleaned.hasSuffix("```") {
+            cleaned = String(cleaned.dropLast(3))
+        }
+        cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // 2️⃣ 尝试从文本中提取第一个 {…}
+        if let start = cleaned.firstIndex(of: "{"),
+           let end = cleaned.lastIndex(of: "}") {
+            let jsonSubstring = cleaned[start...end]
+            return String(jsonSubstring)
+        }
+
+        return nil
+    }
+    
+    /// 🌿 通用图片压缩方法
+    private func resizeImageForModel(
+        _ image: UIImage,
+        maxBase64SizeKB: Int = 4096,          // 默认 4MB（百度）
+        maxLength: CGFloat = 4096,            // 默认最长边 4096（百度）
+        minLength: CGFloat = 15,              // 默认最短边 15
+        startCompression: CGFloat = 0.8,      // 起始压缩质量
+        minCompression: CGFloat = 0.2,        // 最低压缩质量
+        maxAttempts: Int = 6                  // 最大尝试次数
+    ) -> Data? {
+        var targetImage = image
+        var compression = startCompression
+
+        for attempt in 1...maxAttempts {
             // 1️⃣ 缩放尺寸
-            if let resized = resizeImage(targetImage, maxLength: 4096, minLength: 15) {
+            if let resized = resizeImage(targetImage, maxLength: maxLength, minLength: minLength) {
                 targetImage = resized
             }
 
             // 2️⃣ 压缩 JPEG
             guard let jpegData = targetImage.jpegData(compressionQuality: compression) else { return nil }
-            
-            // 🆕 打印 JPEG 文件头（前10字节）
-            let headerBytes = jpegData.prefix(10).map { String(format: "%02X", $0) }.joined(separator: " ")
-            print("📸 JPEG 文件头：\(headerBytes)")
 
-            // 3️⃣ 计算 Base64 大小（实际 = jpegData.count * 4 / 3）
-            let base64Size = Int(Double(jpegData.count) * 4.0 / 3.0)
-            print("📦 压缩后 Base64 预计大小：\(base64Size / 1024) KB (质量: \(compression))")
+            // 3️⃣ 计算 Base64 大小（≈ jpegData.count * 4 / 3）
+            let base64SizeKB = Int(Double(jpegData.count) * 4.0 / 3.0 / 1024.0)
+            print("📦 尝试 #\(attempt)：Base64 大小 \(base64SizeKB)KB (质量: \(compression))")
 
-            if base64Size <= 4 * 1024 * 1024 {
-                // ✅ 符合要求
+            if base64SizeKB <= maxBase64SizeKB {
+                print("✅ 图片已优化 (≤ \(maxBase64SizeKB)KB)")
                 return jpegData
             }
 
-            // 4️⃣ 不够小 → 降低质量再试
+            // 4️⃣ 不够小 → 降低质量
             compression -= 0.1
-            if compression < 0.1 {
-                print("⚠️ 压缩质量已到最低，仍大于4MB")
+            if compression < minCompression {
+                print("⚠️ 压缩质量已到最低 (\(minCompression))，仍大于 \(maxBase64SizeKB)KB")
                 break
             }
         }
 
-        print("❌ 无法将图片压缩至 4MB 内")
+        print("❌ 无法将图片压缩至 \(maxBase64SizeKB)KB 内")
         return nil
     }
     
