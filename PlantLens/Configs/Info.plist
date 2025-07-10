@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ZENAI_APP_KEY_GEMINI</key>
+	<string>sk-wmhYosfskH7nvfBi2EpLajrD2K8DeG87SjDXzwaAqjSTg7RM</string>
+	<key>ZENAI_APP_KEY_OPENAI</key>
+	<string>sk-2qZqHuAXgdMc9c3cDyItPQ07c1794d7Tatu2iBnFnCM9A4LO</string>
+	<key>GEMINI_API_KEY</key>
+	<string>$(GEMINI_API_KEY)</string>
+	<key>BAIDU_APPID</key>
+	<string>6977086</string>
+	<key>BAIDU_SECRET_KEY</key>
+	<string>UI4mne28DN0vOucXjjppE7BQYkvIn2vN</string>
+	<key>BAIDU_API_KEY</key>
+	<string>qC9H4KXwiBebrjq0nbFPhnFb</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>OPENAI_API_KEY</key>
+	<string>$(OPENAI_API_KEY)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>为了识别植物，需要访问您的相机
+</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>为了选择已有照片识别植物，需要访问您的相册
+</string>
+</dict>
+</plist>

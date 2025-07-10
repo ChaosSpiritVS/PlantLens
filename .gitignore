@@ -1,0 +1,4 @@
+# 忽略配置文件，避免上传API Key
+Configs/
+*.xcconfig
+PlantLens/Configs/*.xcconfig
