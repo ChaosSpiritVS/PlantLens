@@ -122,7 +122,6 @@ struct Pla_CameraView: View {
                         // 📂 相册
                         Button(action: {
                             Pla_PermissionManager.shared.check(.photoLibrary) {
-                                print("已获得相册权限，继续打开相册")
                                 viewModel.pickImageFromLibrary()
                             }
                         }) {
@@ -164,9 +163,14 @@ struct Pla_CameraView: View {
                     .padding(.horizontal, 40)
                 }
             }
+                        
         }
         .onAppear {
             viewModel.configure()
+            viewModel.onPhotoCaptured = { image in
+                Pla_AppCoordinator.shared.present(.recognition(image))
+            }
+            
         }
         .onDisappear {
             viewModel.stopSession()
@@ -183,18 +187,6 @@ struct Pla_CameraView: View {
                     viewModel.showImagePicker = false
                 })
             }
-        }
-        .alert(item: $viewModel.recognitionResult) { result in
-            Alert(
-                title: Text("🌿 识别结果"),
-                message: Text("""
-                名称：\(result.name)
-                概述：\(result.description)
-                """),
-                dismissButton: .default(Text("关闭")) {
-                    viewModel.recognitionResult = nil
-                }
-            )
         }
         
     }

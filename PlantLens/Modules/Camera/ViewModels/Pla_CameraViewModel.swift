@@ -8,7 +8,6 @@
 import SwiftUI
 import AVFoundation
 import PhotosUI
-import ProgressHUD
 
 class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @Published var session = AVCaptureSession()
@@ -28,7 +27,8 @@ class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDele
     @Published var selectedImage: UIImage? = nil          // ✅ 用户选中的图片
     @Published var showImagePicker = false                // ✅ 是否显示相册
     @Published var pickerSourceType: UIImagePickerController.SourceType = .photoLibrary
-    @Published var recognitionResult: Pla_RecognitionResult? // 🌱 识别结果
+
+    var onPhotoCaptured: ((UIImage) -> Void)?
 
     private var photoOutput = AVCapturePhotoOutput()
     private var currentDeviceInput: AVCaptureDeviceInput?
@@ -87,13 +87,8 @@ class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDele
             print("❌ 无法获取拍照数据")
             return
         }
-        
-        // 📂 保存到系统相册
-        UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
-        print("✅ 图片已保存到相册")
-
-        ProgressHUD.animate("开始识别...")
-        recognizePlant(from: uiImage)
+                
+        onPhotoCaptured?(uiImage)
     }
     
     // MARK: - 调用图库
@@ -109,8 +104,7 @@ class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDele
         if let image = info[.originalImage] as? UIImage {
             DispatchQueue.main.async {
                 self.selectedImage = image
-                ProgressHUD.animate("开始识别...")
-                self.recognizePlant(from: image)
+                self.onPhotoCaptured?(image)
             }
         }
         picker.dismiss(animated: true)
@@ -118,22 +112,6 @@ class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDele
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
-    }
-    
-    // MARK: - 识别逻辑
-    private func recognizePlant(from image: UIImage) {
-        Pla_PlantRecognitionService.shared.identifyPlant(image: image) { result in
-            DispatchQueue.main.async {
-                ProgressHUD.dismiss()
-                switch result {
-                case .success(let recognition):
-                    self.recognitionResult = recognition
-                case .failure(let error):
-                    ProgressHUD.failed(error.localizedDescription)
-                    self.recognitionResult = .placeholder
-                }
-            }
-        }
     }
 
     // MARK: - 开关闪光灯
@@ -191,7 +169,7 @@ class Pla_CameraViewModel: NSObject, ObservableObject, AVCapturePhotoCaptureDele
 
     // MARK: - 关闭页面
     func close() {
-        Pla_AppCoordinator.shared.dismiss()
+        Pla_AppCoordinator.shared.dismiss(.camera)
     }
     
 }

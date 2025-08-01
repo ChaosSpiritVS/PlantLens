@@ -10,32 +10,41 @@ import CoreData
 
 struct ContentView: View {
     @StateObject var coordinator = Pla_AppCoordinator.shared
-//    @StateObject var session = Pla_UserSession.shared
 
     var body: some View {
         Group {
             Pla_MainTabView()
         }
-        .environmentObject(coordinator) // ✅ 传递给所有子视图
-        
-        // 👇 这里的 Binding 只在 modalScreen.type == .fullScreen 时生效
-        .fullScreenCover(item: Binding<Pla_Screen?>(
-            get: {
-                guard coordinator.modalScreen?.1 == .fullScreen else { return nil }
-                return coordinator.modalScreen?.0
-            },
-            set: { _, _ in coordinator.dismiss() }
-        )) { screen in
-            screen.view()
+        .environmentObject(coordinator)
+
+        // ✅ 堆叠所有 fullScreenCover
+        .fullScreenCover(isPresented: Binding(
+            get: { coordinator.modalStack.contains(where: { $0.1 == .fullScreen }) },
+            set: { isPresented in
+                if !isPresented {
+                    coordinator.dismiss(type: .fullScreen)
+                }
+            }
+        )) {
+            ZStack {
+                ForEach(Array(coordinator.modalStack.enumerated()), id: \.offset) { index, modal in
+                    if modal.1 == .fullScreen {
+                        modal.0.view()
+                            .zIndex(Double(index))
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+            }
         }
-        
-        // 👇 这里的 Binding 只在 modalScreen.type == .sheet 时生效
+
+        // ✅ 单独处理最顶层 sheet（一次只显示一个）
         .sheet(item: Binding<Pla_Screen?>(
             get: {
-                guard coordinator.modalScreen?.1 == .sheet else { return nil }
-                return coordinator.modalScreen?.0
+                coordinator.modalStack.last(where: { $0.1 == .sheet })?.0
             },
-            set: { _, _ in coordinator.dismiss() }
+            set: { _, _ in
+                coordinator.dismiss(type: .sheet)
+            }
         )) { screen in
             screen.view()
         }

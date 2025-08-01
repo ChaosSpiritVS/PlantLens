@@ -3,4 +3,112 @@
    uuid = "2EBECB13-0B32-48C9-8308-50ACD0CEBA3B"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7CF1BE6D-6BB7-40BD-88B1-BA5C5871630B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "performRecognition(image:onComplete:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7CF1BE6D-6BB7-40BD-88B1-BA5C5871630B - 4b4ce794bb4da9a5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 () async -&gt; () in PlantLens.Pla_RecognitionViewModel.performRecognition(image: __C.UIImage, onComplete: (Swift.Optional&lt;PlantLens.Pla_RecognitionResult&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PlantLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lijie/Desktop/Manzhan/PlantLens/PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "45"
+                  endingLineNumber = "45">
+               </Location>
+               <Location
+                  uuid = "7CF1BE6D-6BB7-40BD-88B1-BA5C5871630B - 3e5482c6a0fa5da3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for closure #1 () async -&gt; () in PlantLens.Pla_RecognitionViewModel.performRecognition(image: __C.UIImage, onComplete: (Swift.Optional&lt;PlantLens.Pla_RecognitionResult&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PlantLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lijie/Desktop/Manzhan/PlantLens/PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "45"
+                  endingLineNumber = "45">
+               </Location>
+               <Location
+                  uuid = "7CF1BE6D-6BB7-40BD-88B1-BA5C5871630B - de3dcec0b6764677"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor @Sendable () -&gt; () in closure #1 () async -&gt; () in PlantLens.Pla_RecognitionViewModel.performRecognition(image: __C.UIImage, onComplete: (Swift.Optional&lt;PlantLens.Pla_RecognitionResult&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PlantLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lijie/Desktop/Manzhan/PlantLens/PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "45"
+                  endingLineNumber = "45">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "32AA3301-B5C6-4FB8-B05B-75787331EA26"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "performRecognition(image:onComplete:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "32AA3301-B5C6-4FB8-B05B-75787331EA26 - fa43bd6859976d6d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in PlantLens.Pla_RecognitionViewModel.performRecognition(image: __C.UIImage, onComplete: (Swift.Optional&lt;PlantLens.Pla_RecognitionResult&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PlantLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lijie/Desktop/Manzhan/PlantLens/PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+               <Location
+                  uuid = "32AA3301-B5C6-4FB8-B05B-75787331EA26 - 75ca3f8817eeff64"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(8) suspend resume partial function for closure #1 () async -&gt; () in PlantLens.Pla_RecognitionViewModel.performRecognition(image: __C.UIImage, onComplete: (Swift.Optional&lt;PlantLens.Pla_RecognitionResult&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "PlantLens.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/lijie/Desktop/Manzhan/PlantLens/PlantLens/Modules/Camera/ViewModels/Pla_RecognitionViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
